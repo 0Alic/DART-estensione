@@ -33,7 +33,7 @@ RT framework papers: [Design of a role-based trust-management framework](https:/
 
 Chain discovery algorithms: [Distributed credential chain discovery in trust management](https://content.iospress.com/articles/journal-of-computer-security/jcs169) Ninghui Li et al.
 
-Trans-organizational role-based access control: [RBAC-SC: Role-Based Access Control Using Smart Contract](https://ieeexplore.ieee.org/abstract/document/8307397) Cruz Li et al.
+Trans-organizational role-based access control: [RBAC-SC: Role-Based Access Control Using Smart Contract](https://ieeexplore.ieee.org/abstract/document/8307397) Cruz et al.
 
-Off-chain computation: [On or Off the Blockchain? Insights on Off-Chaining Computation and Data](https://link.springer.com/chapter/10.1007/978-3-319-67262-5_1) Cruz Li et al.
+Off-chain computation: [On or Off the Blockchain? Insights on Off-Chaining Computation and Data](https://link.springer.com/chapter/10.1007/978-3-319-67262-5_1) Eberhardt et al.
 
