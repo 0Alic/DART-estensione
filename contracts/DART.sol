@@ -27,7 +27,6 @@ contract DART {
     // Definisci la struttura dati per rappresentare le role expressions
     struct Expression {
         bytes1 exprType;
-        uint128 refCount;
 
         bytes2 roleA;
         bytes2 roleB;
@@ -88,15 +87,6 @@ contract DART {
         members[exprId].remove(_member);
     }
 
-    function updateSimpleMember(bytes2 _assignedRolename, address _member, uint8 _newWeight)
-            external {
-        
-        bytes32 exprId = packExpr(msg.sender, _assignedRolename);
-        require(exprPool[exprId].exprType == EXPR_SI, "local role does not exists");
-
-        members[exprId].update(_member, _newWeight);
-    }
-
     function addSimpleInclusion(bytes2 _assignedRolename, address _principal, bytes2 _rolename, uint8 _weight)
             external returns(bool, bytes32) {
 
@@ -108,28 +98,6 @@ contract DART {
         require(remoteRole.exprType == EXPR_SI, "remote role does not exists");
 
         return (localRole.inclusions.insert(remoteRoleId, _weight), remoteRoleId);
-    }
-
-    function removeSimpleInclusion(bytes2 _assignedRolename, bytes32 _exprId)
-            external {
-
-        bytes32 localRoleId = packExpr(msg.sender, _assignedRolename);
-        Expression storage localRole = exprPool[localRoleId];
-        require(localRole.exprType == EXPR_SI, "local role does not exists");
-
-        require(exprPool[_exprId].exprType == EXPR_SI, "not a simple inclusion");
-        localRole.inclusions.remove(_exprId);
-    }
-
-    function updateSimpleInclusion(bytes2 _assignedRolename, bytes32 _exprId, uint8 _newWeight)
-            external {
-        
-        bytes32 localRoleId = packExpr(msg.sender, _assignedRolename);
-        Expression storage localRole = exprPool[localRoleId];
-        require(localRole.exprType == EXPR_SI, "local role does not exists");
-
-        require(exprPool[_exprId].exprType == EXPR_SI, "not a simple inclusion");
-        localRole.inclusions.update(_exprId, _newWeight);
     }
 
     function addLinkedInclusion(bytes2 _assignedRolename, address _principal, bytes2 _firstRolename, bytes2 _secondRolename, uint8 _weight)
@@ -148,32 +116,8 @@ contract DART {
             linkedExpr.roleA = _firstRolename;
             linkedExpr.roleB = _secondRolename;
         }
-        linkedExpr.refCount++;
 
         return (localRole.inclusions.insert(linkedExprId, _weight), linkedExprId);
-    }
-
-    function removeLinkedInclusion(bytes2 _assignedRolename, bytes32 _exprId)
-            external {
-    
-        Expression storage localRole = exprPool[packExpr(msg.sender, _assignedRolename)];
-        require(localRole.exprType == EXPR_SI, "local role does not exists");
-
-        Expression storage expr = exprPool[_exprId];
-        require(expr.exprType == EXPR_LI, "not a linked inclusion");
-        localRole.inclusions.remove(_exprId);
-        expr.refCount--;
-        if(expr.refCount == 0) delete exprPool[_exprId];
-    }
-
-    function updateLinkedInclusion(bytes2 _assignedRolename, bytes32 _exprId, uint8 _newWeight)
-            external {
-    
-        Expression storage localRole = exprPool[packExpr(msg.sender, _assignedRolename)];
-        require(localRole.exprType == EXPR_SI, "local role does not exists");
-
-        require(exprPool[_exprId].exprType == EXPR_LI, "not a linked inclusion");
-        localRole.inclusions.update(_exprId, _newWeight);
     }
     
     function addIntersectionInclusion(bytes2 _assignedRolename, address _firstPrincipal, bytes2 _firstRolename,
@@ -201,32 +145,8 @@ contract DART {
             intersectionExpr.addrB = _secondPrincipal;
             intersectionExpr.roleB = _secondRolename;
         }
-        intersectionExpr.refCount++;
 
         return localRole.inclusions.insert(intersectionExprId, _weight);
-    }
-
-    function removeIntersectionInclusion(bytes2 _assignedRolename, bytes32 _exprId)
-            external {
-
-        Expression storage localRole = exprPool[packExpr(msg.sender, _assignedRolename)];
-        require(localRole.exprType == EXPR_SI, "local role does not exists");
-
-        Expression storage expr = exprPool[_exprId];
-        require(expr.exprType == EXPR_II, "not an intersection inclusion");
-        localRole.inclusions.remove(_exprId);
-        expr.refCount--;
-        if(expr.refCount == 0) delete exprPool[_exprId];
-    }
-
-    function updateIntersectionInclusion(bytes2 _assignedRolename, bytes32 _exprId, uint8 _newWeight)
-            external {
-
-        Expression storage localRole = exprPool[packExpr(msg.sender, _assignedRolename)];
-        require(localRole.exprType == EXPR_SI, "local role does not exists");
-
-        require(exprPool[_exprId].exprType == EXPR_II, "not an intersection inclusion");
-        localRole.inclusions.update(_exprId, _newWeight);
     }
 
     // ----------------------------------------------------- //
